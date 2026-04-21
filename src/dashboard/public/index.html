@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTBot Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <header class="header">
+      <div class="logo">
+        <span class="emoji">🤖</span>
+        <span class="title">TTBot Dashboard</span>
+      </div>
+      <div class="connection-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">检查中...</span>
+      </div>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="main">
+      <!-- 左侧：Bot 状态 -->
+      <section class="panel status-panel">
+        <h2>Bot 状态</h2>
+        <div class="status-grid">
+          <div class="status-item">
+            <span class="label">用户名</span>
+            <span class="value" id="username">-</span>
+          </div>
+          <div class="status-item">
+            <span class="label">生命值</span>
+            <div class="health-bar">
+              <div class="health-fill" id="healthFill"></div>
+            </div>
+            <span class="value" id="health">0/20</span>
+          </div>
+          <div class="status-item">
+            <span class="label">饥饿值</span>
+            <div class="food-bar">
+              <div class="food-fill" id="foodFill"></div>
+            </div>
+            <span class="value" id="food">0/20</span>
+          </div>
+          <div class="status-item">
+            <span class="label">位置</span>
+            <span class="value" id="position">(-, -, -)</span>
+          </div>
+          <div class="status-item">
+            <span class="label">维度</span>
+            <span class="value" id="dimension">-</span>
+          </div>
+          <div class="status-item">
+            <span class="label">游戏模式</span>
+            <span class="value" id="gamemode">-</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 右侧：实时日志 -->
+      <section class="panel log-panel">
+        <h2>实时日志</h2>
+        <div class="log-container" id="logContainer">
+          <div class="log-placeholder">等待日志...</div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 操作请求历史 -->
+    <section class="panel history-panel">
+      <h2>操作请求历史 (最近 100 条)</h2>
+      <div class="table-container">
+        <table class="request-table">
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>方法</th>
+              <th>端点</th>
+              <th>状态</th>
+              <th>耗时</th>
+            </tr>
+          </thead>
+          <tbody id="requestTable">
+            <tr>
+              <td colspan="5" class="empty">暂无数据</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 操作按钮 -->
+    <section class="panel action-panel">
+      <h2>快速操作</h2>
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="connectBot()">连接</button>
+        <button class="btn btn-secondary" onclick="disconnectBot()">断开</button>
+        <button class="btn btn-info" onclick="refreshStatus()">刷新状态</button>
+        <button class="btn btn-warning" onclick="clearLogs()">清空日志</button>
+      </div>
+    </section>
+
+    <!-- API 测试面板 -->
+    <section class="panel api-panel">
+      <h2>API 测试</h2>
+      <div class="api-test">
+        <div class="form-row">
+          <select id="apiMethod">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+          </select>
+          <input type="text" id="apiEndpoint" placeholder="端点路径 (如 /status)">
+          <button class="btn btn-primary" onclick="sendApiRequest()">发送</button>
+        </div>
+        <div class="form-row">
+          <textarea id="apiBody" placeholder="请求体 (JSON 格式)" rows="3"></textarea>
+        </div>
+        <div class="response-area">
+          <h4>响应</h4>
+          <pre id="apiResponse">等待请求...</pre>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
