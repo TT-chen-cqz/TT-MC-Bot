@@ -1,10 +1,9 @@
 # TT MC Bot
 
-基于 mineflayer 的 Minecraft Bot 服务，提供 OpenClaw SKILL 控制 bot 在 MC 服务器中执行基础生存操作，并配备 Dashboard 用于监控和调试。
+基于 mineflayer 的 Minecraft Bot 服务，可以让 OpenClaw 控制 bot 在 MC 服务器中执行基础生存操作，并配备 Dashboard 用于监控和调试。
 
 ## 功能特性
 
-- **RESTful API**: 完整的 HTTP API 接口控制 bot
 - **Dashboard**: 实时监控 bot 状态和操作日志
 - **生存操作**: 移动、挖掘、战斗、钓鱼等
 - **环境扫描**: 检测周围实体、方块、背包
