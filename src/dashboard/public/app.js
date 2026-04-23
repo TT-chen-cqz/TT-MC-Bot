@@ -7,18 +7,25 @@ const API_BASE = window.location.origin;
 // 状态更新定时器
 let statusInterval;
 
+// 事件日志状态
+let lastEventCount = 0;
+
 /**
  * 初始化
  */
 document.addEventListener('DOMContentLoaded', () => {
   refreshStatus();
   loadRequestLog();
+  loadEventLog(); // Fix: 初始化时加载事件日志
   
   // 定时刷新状态
   statusInterval = setInterval(refreshStatus, 5000);
   
-  // 定时刷新日志
+  // 定时刷新请求日志
   setInterval(loadRequestLog, 3000);
+  
+  // Fix: 定时刷新事件日志（实时日志面板）
+  setInterval(loadEventLog, 2000);
   
   // 设置方法选择器事件
   document.getElementById('apiMethod').addEventListener('change', updateEndpointPlaceholder);
@@ -150,8 +157,64 @@ async function clearLogs() {
     const response = await fetch(`${API_BASE}/events`, { method: 'DELETE' });
     const data = await response.json();
     document.getElementById('logContainer').innerHTML = '<div class="log-placeholder">等待日志...</div>';
+    lastEventCount = 0;
   } catch (error) {
     console.error('Failed to clear logs:', error);
+  }
+}
+
+/**
+ * Fix: 加载事件日志并显示在实时日志面板
+ */
+async function loadEventLog() {
+  try {
+    const response = await fetch(`${API_BASE}/events`);
+    const data = await response.json();
+    const events = data.events || [];
+    
+    // 只处理新增的事件
+    if (events.length > lastEventCount) {
+      const newEvents = events.slice(lastEventCount);
+      newEvents.forEach(event => {
+        renderEventToLog(event);
+      });
+      lastEventCount = events.length;
+    }
+  } catch (error) {
+    console.error('Failed to load event log:', error);
+  }
+}
+
+/**
+ * Fix: 将事件渲染到实时日志面板
+ */
+function renderEventToLog(event) {
+  const container = document.getElementById('logContainer');
+  
+  // 移除占位符
+  const placeholder = container.querySelector('.log-placeholder');
+  if (placeholder) {
+    placeholder.remove();
+  }
+  
+  const time = event.timestamp ? formatTime(event.timestamp) : new Date().toLocaleTimeString('zh-CN', { hour12: false });
+  const type = event.type || 'unknown';
+  const dataStr = event.data ? JSON.stringify(event.data).substring(0, 80) : '';
+  
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML = `
+    <span class="time">${time}</span>
+    <span class="method event">${type.toUpperCase()}</span>
+    <span class="message">${dataStr}</span>
+  `;
+  
+  container.appendChild(entry);
+  container.scrollTop = container.scrollHeight;
+  
+  // 限制日志条数
+  while (container.children.length > 50) {
+    container.removeChild(container.firstChild);
   }
 }
 

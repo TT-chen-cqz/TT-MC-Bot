@@ -32,6 +32,24 @@ function createBot(config = {}) {
 
   bot = mineflayer.createBot(finalConfig);
   
+  // Fix: 拦截 bot.on，将废弃的 physicTick 映射到 physicsTick
+  // 避免 mineflayer-pvp 等旧插件触发弃用警告
+  const originalOn = bot.on.bind(bot);
+  bot.on = function(event, listener) {
+    if (event === 'physicTick') {
+      event = 'physicsTick';
+    }
+    return originalOn(event, listener);
+  };
+  // 同步 once 方法
+  const originalOnce = bot.once.bind(bot);
+  bot.once = function(event, listener) {
+    if (event === 'physicTick') {
+      event = 'physicsTick';
+    }
+    return originalOnce(event, listener);
+  };
+  
   // 加载插件
   bot.loadPlugin(pathfinder);
   bot.loadPlugin(pvp);
