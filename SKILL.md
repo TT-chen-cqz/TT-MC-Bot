@@ -1,3 +1,8 @@
+---
+name: tt-mc-bot
+description: 基于 mineflayer 的 Minecraft Bot 服务，可以让 OpenClaw 控制 bot 在 MC 服务器中执行基础生存操作，并配备 Dashboard 用于监控和调试。
+---
+
 # TT MC Bot
 
 你可以使用如下 API 接入 MC，API 服务器在本机 3001 端口运行。
