@@ -3,6 +3,7 @@
  */
 
 const { goals } = require('mineflayer-pathfinder');
+const Vec3 = require('vec3').Vec3;
 const { getBot, isConnected } = require('./connection');
 
 // 实体类型分类
@@ -58,7 +59,7 @@ function scanNearby(radius = 16) {
   for (let dx = -3; dx <= 3; dx++) {
     for (let dy = -2; dy <= 2; dy++) {
       for (let dz = -3; dz <= 3; dz++) {
-        const block = bot.blockAt(pos.offset(dx, dy, dz));
+        const block = bot.blockAt(new Vec3(pos.x + dx, pos.y + dy, pos.z + dz));
         if (block && block.name !== 'air') {
           nearbyBlocks.add(block.name);
         }
@@ -67,7 +68,7 @@ function scanNearby(radius = 16) {
   }
 
   // 脚下方块
-  const groundBlock = bot.blockAt(pos.offset(0, -1, 0));
+  const groundBlock = bot.blockAt(new Vec3(pos.x, pos.y - 1, pos.z));
 
   // 附近玩家
   const players = Object.values(bot.players)
@@ -129,7 +130,7 @@ function scanInventory() {
 function scanBlock(x, y, z) {
   const bot = checkConnection();
   
-  const block = bot.blockAt({ x, y, z });
+  const block = bot.blockAt(new Vec3(x, y, z));
   
   if (!block || block.name === 'air') {
     return {
@@ -203,7 +204,7 @@ async function moveTo(options) {
 
       const startTime = Date.now();
       
-      await bot.pathfinder.goto(new goals.GoalBlock(goalPosition.x, goalPosition.y, goalPosition.z));
+      await bot.pathfinder.goto(new goals.GoalBlock(Math.floor(goalPosition.x), Math.floor(goalPosition.y), Math.floor(goalPosition.z)));
       
       clearTimeout(timeoutId);
       const duration = Date.now() - startTime;
@@ -260,11 +261,7 @@ function look(options) {
 
   return new Promise((resolve) => {
     if (target) {
-      bot.lookAt({
-        x: target.x,
-        y: target.y,
-        z: target.z
-      }, true, () => {
+      bot.lookAt(new Vec3(target.x, target.y, target.z), true, () => {
         resolve({
           success: true,
           yaw: bot.entity.yaw,
@@ -295,7 +292,7 @@ async function dig(options) {
   const { position, timeout = 10000 } = options;
 
   return new Promise(async (resolve, reject) => {
-    const block = bot.blockAt(position);
+    const block = bot.blockAt(new Vec3(position.x, position.y, position.z));
     
     if (!block || block.name === 'air') {
       return reject({
@@ -344,7 +341,7 @@ async function place(options) {
   const bot = checkConnection();
   const { position, item, face = 'top' } = options;
 
-  const referenceBlock = bot.blockAt(position);
+  const referenceBlock = bot.blockAt(new Vec3(position.x, position.y, position.z));
   if (!referenceBlock) {
     throw {
       error: 'INVALID_POSITION',
@@ -404,7 +401,7 @@ async function use(options) {
   const { target, position } = options;
 
   if (position) {
-    const block = bot.blockAt(position);
+    const block = bot.blockAt(new Vec3(position.x, position.y, position.z));
     if (!block) {
       throw {
         error: 'TARGET_NOT_FOUND',
@@ -447,7 +444,7 @@ async function activate(options) {
   const bot = checkConnection();
   const { position } = options;
 
-  const block = bot.blockAt(position);
+  const block = bot.blockAt(new Vec3(position.x, position.y, position.z));
   if (!block) {
     throw {
       error: 'TARGET_NOT_FOUND',
